@@ -47,7 +47,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'raspyemu=cli:main',
+            'raspyemu=raspyemu.cli:main',
         ],
     },
 )
