@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
+import sys
 from setuptools import setup, find_packages
 # use the same encoding in python 3 and 2
 from codecs import open
@@ -11,6 +11,14 @@ here = path.abspath(path.dirname(__file__))
 
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
+
+# ref: https://pypi.python.org/pypi/pytest-runner
+# Because it uses Setuptools setup_requires, pytest-runner will install itself on every invocation of setup.py.
+# In some cases, this causes delays for invocations of setup.py that will never invoke pytest-runner.
+# Avoid this contingency, by requiring pytest-runner only when pytest is invoked
+needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
+pytest_runner = ['pytest-runner >=2.0, <3',] if needs_pytest else []
+setup_requires = [] + pytest_runner
 
 setup(
     name='raspyemu',
@@ -41,7 +49,7 @@ setup(
     keywords='RaspberryPi rpi qemu emulator',
     packages=find_packages(exclude=['tests']),
     # external packages
-    install_requires=['pexpect >= 4, <5'],
+    install_requires=['pexpect >=4, <5'],
     # eg:
     # $ pip install -e .[dev,test]
     extras_require={
@@ -53,4 +61,9 @@ setup(
             'raspyemu=raspyemu.cli:main',
         ],
     },
+    setup_requires=setup_requires,
+    tests_require=[
+        'pytest >=3.0.6, <4',
+        'pytest-cov >=2.4.0, <3'
+    ],
 )
